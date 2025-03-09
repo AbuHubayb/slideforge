@@ -26,7 +26,7 @@ def hello():
 def generate_slides():
     text = request.json.get('text', '')  # Grab 'text' from POST body
     lines = text.split('\n')  # Split by newlines
-    slides = [{'title': 'SlideForge', 'content': line} for line in lines if line]
+    slides = [{'title': f'Slide {i+1}', 'content': line} for i, line in enumerate(lines) if line]
     return jsonify({'slides': slides})
 
 if __name__ == '__main__':
