@@ -35,7 +35,37 @@
 #     app.run(debug=True, port=5000)
 
 
+# from flask import Flask, request, jsonify
+# app = Flask(__name__)
+
+# @app.route('/')
+# def hello():
+#     return "Hello, SlideForge!"
+
+# @app.route('/generate', methods=['POST'])
+# def generate_slides():
+#     try:
+#         if not request.is_json:
+#             return jsonify({'error': 'Request must be JSON'}), 400
+#         text = request.json.get('text')
+#         if text is None:
+#             return jsonify({'error': 'Missing "text" key in JSON'}), 400
+#         if not isinstance(text, str):
+#             return jsonify({'error': '"text" must be a string'}), 400
+#         lines = text.split('\n')
+#         slides = [{'title': f'Slide {i+1}', 'content': line.strip().capitalize()} for i, line in enumerate(lines) if line.strip().capitalize()]
+#         return jsonify({'slides': slides})
+#     except Exception as e:
+#         return jsonify({'error': f'Server error: {str(e)}'}), 500
+
+# if __name__ == '__main__':
+#     app.run(debug=True, port=5000)
+
+
+
 from flask import Flask, request, jsonify
+from werkzeug.exceptions import BadRequest  # Import BadRequest explicitly
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -47,14 +77,17 @@ def generate_slides():
     try:
         if not request.is_json:
             return jsonify({'error': 'Request must be JSON'}), 400
-        text = request.json.get('text')
+        data = request.get_json()  # Try to parse JSON
+        text = data.get('text')
         if text is None:
             return jsonify({'error': 'Missing "text" key in JSON'}), 400
         if not isinstance(text, str):
             return jsonify({'error': '"text" must be a string'}), 400
         lines = text.split('\n')
-        slides = [{'title': f'Slide {i+1}', 'content': line.strip().capitalize()} for i, line in enumerate(lines) if line.strip().capitalize()]
+        slides = [{'title': f'Slide {i+1}', 'content': line.strip()} for i, line in enumerate(lines) if line.strip()]
         return jsonify({'slides': slides})
+    except BadRequest:  # Catch malformed JSON explicitly
+        return jsonify({'error': 'Invalid JSON format'}), 400
     except Exception as e:
         return jsonify({'error': f'Server error: {str(e)}'}), 500
 
