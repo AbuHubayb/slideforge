@@ -84,7 +84,7 @@ def generate_slides():
         if not isinstance(text, str):
             return jsonify({'error': '"text" must be a string'}), 400
         lines = text.split('\n')
-        slides = [{'title': f'Slide {i+1}', 'content': line.strip()} for i, line in enumerate(lines) if line.strip()]
+        slides = [{'title': f'Slide {i+1}', 'content': line.strip().capitalize()} for i, line in enumerate(lines) if line.strip()]
         return jsonify({'slides': slides})
     except BadRequest:  # Catch malformed JSON explicitly
         return jsonify({'error': 'Invalid JSON format'}), 400
